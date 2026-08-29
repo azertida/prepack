@@ -1,6 +1,6 @@
 /* ==========================================
    PRÉPACK
-   Deux natures : obligations (datées) et
+   Deux natures : engagements (datés) et
    intentions (sans temporalité).
    ========================================== */
 
@@ -44,7 +44,11 @@ function migrateTasks() {
 
     tasks.forEach(task => {
         if (!task.type) {
-            task.type = task.dueDate ? 'obligation' : 'intention';
+            task.type = task.dueDate ? 'engagement' : 'intention';
+            changed = true;
+        }
+        if (task.type === 'obligation') {          // ancien nom du même type
+            task.type = 'engagement';
             changed = true;
         }
         if (task.type === 'intention') {
@@ -173,15 +177,15 @@ function setFormType(type) {
         btn.classList.toggle('active', btn.dataset.type === type);
     });
 
-    const obligationFields = document.getElementById('obligationFields');
+    const engagementFields = document.getElementById('engagementFields');
     const hint = document.getElementById('typeHint');
 
-    if (type === 'obligation') {
-        obligationFields.style.display = 'block';
-        hint.textContent = 'Une contrainte extérieure, avec une date réelle.';
+    if (type === 'engagement') {
+        engagementFields.style.display = 'block';
+        hint.textContent = 'Pris envers quelqu\'un d\'autre. Porte une date réelle.';
     } else {
-        obligationFields.style.display = 'none';
-        hint.textContent = 'Quelque chose que vous voulez faire. Ni date, ni priorité : rien à rattraper.';
+        engagementFields.style.display = 'none';
+        hint.textContent = 'Pris envers vous-même. Ni date, ni priorité : rien à rattraper.';
     }
 }
 
@@ -206,7 +210,7 @@ function openForm(taskId = null) {
             document.getElementById('submitBtn').textContent = '✅ Modifier';
         }
     } else {
-        setFormType('obligation');
+        setFormType('engagement');
         document.getElementById('formTitle').textContent = '➕ Nouvelle entrée';
         document.getElementById('submitBtn').textContent = '✅ Ajouter';
     }
@@ -222,7 +226,7 @@ function closeForm() {
     document.getElementById('editingTaskId').value = '';
     document.getElementById('formTitle').textContent = '➕ Nouvelle entrée';
     document.getElementById('submitBtn').textContent = '✅ Ajouter';
-    setFormType('obligation');
+    setFormType('engagement');
 }
 
 function handleSubmitTask(e) {
@@ -234,9 +238,9 @@ function handleSubmitTask(e) {
     const tagsInput = document.getElementById('taskTags').value.trim();
     const editingId = document.getElementById('editingTaskId').value;
 
-    const isObligation = type === 'obligation';
-    const priority = isObligation ? document.getElementById('taskPriority').value : null;
-    const dueDate = isObligation ? (document.getElementById('taskDueDate').value || null) : null;
+    const isEngagement = type === 'engagement';
+    const priority = isEngagement ? document.getElementById('taskPriority').value : null;
+    const dueDate = isEngagement ? (document.getElementById('taskDueDate').value || null) : null;
     const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
 
     if (editingId) {
@@ -315,7 +319,7 @@ function updateHero() {
     // Sous-titre : la prochaine échéance, pas le nombre de choses en attente
     const today = todayISO();
     const dated = tasks
-        .filter(t => t.type === 'obligation' && t.status !== 'done' && t.dueDate)
+        .filter(t => t.type === 'engagement' && t.status !== 'done' && t.dueDate)
         .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
     const subtitle = document.getElementById('heroSubtitle');
@@ -361,7 +365,7 @@ function getFilteredTasks() {
     let filtered = [...tasks];
 
     if (filters.priority !== 'all') {
-        filtered = filtered.filter(t => t.type === 'obligation' && t.priority === filters.priority);
+        filtered = filtered.filter(t => t.type === 'engagement' && t.priority === filters.priority);
     }
     if (filters.tag !== 'all') {
         filtered = filtered.filter(t => t.tags && t.tags.includes(filters.tag));
@@ -393,9 +397,9 @@ function clearFilters() {
 function renderTasks() {
     const visible = getFilteredTasks();
 
-    const obligations = visible
-        .filter(t => t.type === 'obligation' && t.status !== 'done' && !t.setAside)
-        .sort(sortObligations);
+    const engagements = visible
+        .filter(t => t.type === 'engagement' && t.status !== 'done' && !t.setAside)
+        .sort(sortEngagements);
 
     const intentions = visible
         .filter(t => t.type === 'intention' && t.status !== 'done' && !t.setAside);
@@ -406,8 +410,8 @@ function renderTasks() {
 
     const setAside = visible.filter(t => t.setAside && t.status !== 'done');
 
-    renderList(obligations, 'obligationsList', 'Aucune obligation en cours');
-    document.getElementById('obligationsCount').textContent = obligations.length;
+    renderList(engagements, 'engagementsList', 'Aucun engagement en cours');
+    document.getElementById('engagementsCount').textContent = engagements.length;
 
     renderIntentions(intentions);
 
@@ -419,7 +423,7 @@ function renderTasks() {
     document.getElementById('setAsideSection').style.display = setAside.length ? 'block' : 'none';
 }
 
-function sortObligations(a, b) {
+function sortEngagements(a, b) {
     // D'abord les datées, par date croissante
     if (a.dueDate && b.dueDate && a.dueDate !== b.dueDate) return a.dueDate.localeCompare(b.dueDate);
     if (a.dueDate && !b.dueDate) return -1;
@@ -491,7 +495,7 @@ function shuffleIntentions() {
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.classList.add(task.type === 'obligation' ? `priority-${task.priority}` : 'type-intention');
+    card.classList.add(task.type === 'engagement' ? `priority-${task.priority}` : 'type-intention');
     if (task.status === 'done') card.classList.add('completed');
     if (task.setAside) card.classList.add('set-aside');
 
@@ -504,7 +508,7 @@ function createTaskCard(task) {
     title.textContent = task.title;
     header.appendChild(title);
 
-    if (task.type === 'obligation') {
+    if (task.type === 'engagement') {
         const priority = document.createElement('div');
         priority.className = `task-priority ${task.priority}`;
         priority.textContent = { high: '🔴 Haute', medium: '🟡 Moyenne', low: '🟢 Basse' }[task.priority];
@@ -520,12 +524,12 @@ function createTaskCard(task) {
         card.appendChild(description);
     }
 
-    // Meta : uniquement pour les obligations (et la date de complétion)
+    // Meta : uniquement pour les engagements (et la date de complétion)
     const meta = document.createElement('div');
     meta.className = 'task-meta';
     let hasMeta = false;
 
-    if (task.type === 'obligation' && task.dueDate && task.status !== 'done') {
+    if (task.type === 'engagement' && task.dueDate && task.status !== 'done') {
         const badge = document.createElement('span');
         badge.className = 'task-due-date';
         const today = todayISO();

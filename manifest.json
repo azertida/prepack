@@ -1,7 +1,7 @@
 {
   "name": "Prépack",
   "short_name": "Prépack",
-  "description": "Obligations datées et intentions à matérialiser",
+  "description": "Engagements datés et intentions à matérialiser",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

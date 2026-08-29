@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#DC2626">
     <title>📦 Prépack</title>
-    <meta name="description" content="Obligations datées et intentions à matérialiser">
+    <meta name="description" content="Engagements datés et intentions à matérialiser">
 
     <!-- PWA : chemins relatifs, l'appli est servie depuis un sous-dossier -->
     <link rel="manifest" href="./manifest.json">
@@ -68,11 +68,11 @@
                 <div class="form-group">
                     <label>Nature *</label>
                     <div class="type-toggle">
-                        <button type="button" class="type-btn active" data-type="obligation">📌 Obligation</button>
+                        <button type="button" class="type-btn active" data-type="engagement">📌 Engagement</button>
                         <button type="button" class="type-btn" data-type="intention">💭 Intention</button>
                     </div>
                     <small class="form-hint" id="typeHint">Une contrainte extérieure, avec une date réelle.</small>
-                    <input type="hidden" id="taskType" value="obligation">
+                    <input type="hidden" id="taskType" value="engagement">
                 </div>
 
                 <div class="form-group">
@@ -85,8 +85,8 @@
                     <textarea id="taskDescription" placeholder="Détails optionnels…" rows="3"></textarea>
                 </div>
 
-                <!-- Champs réservés aux obligations -->
-                <div id="obligationFields">
+                <!-- Champs réservés aux engagements -->
+                <div id="engagementFields">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="taskPriority">Priorité *</label>
@@ -127,7 +127,7 @@
             </div>
             <div class="filters-grid">
                 <div class="form-group">
-                    <label for="filterPriority">Priorité <small>(obligations)</small></label>
+                    <label for="filterPriority">Priorité <small>(engagements)</small></label>
                     <select id="filterPriority">
                         <option value="all">Toutes les priorités</option>
                         <option value="high">🔴 Haute</option>
@@ -150,14 +150,14 @@
             </div>
         </section>
 
-        <!-- Obligations -->
+        <!-- Engagements -->
         <section class="tasks-section">
             <div class="section-header">
-                <h2>📌 Obligations</h2>
-                <span class="badge" id="obligationsCount">0</span>
+                <h2>📌 Engagements</h2>
+                <span class="badge" id="engagementsCount">0</span>
             </div>
-            <div id="obligationsList" class="tasks-list">
-                <p class="empty-state">Aucune obligation en cours</p>
+            <div id="engagementsList" class="tasks-list">
+                <p class="empty-state">Aucun engagement en cours</p>
             </div>
         </section>
 

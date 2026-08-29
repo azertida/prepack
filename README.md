@@ -9,21 +9,21 @@ Tout est stocké dans le `localStorage` du navigateur.
 ## Le principe
 
 Une liste de tâches classique fabrique du retard. Chaque échéance qui passe se
-transforme en reproche, chaque intention non réalisée s'accumule à côté des vraies
-obligations, et le compteur en haut de l'écran ne descend que si l'on travaille.
+transforme en reproche, chaque intention non réalisée s'accumule à côté des vrais
+engagements, et le compteur en haut de l'écran ne descend que si l'on travaille.
 
 Prépack sépare donc deux natures :
 
-| | Obligation | Intention |
+| | Engagement | Intention |
 |---|---|---|
-| Origine | Contrainte extérieure | Envie personnelle |
+| Origine | Pris envers quelqu'un | Pris envers soi-même |
 | Date d'échéance | Oui | Aucune |
 | Priorité | Oui | Aucune |
 | Dépassement signalé | Oui, c'est une information utile | Impossible par construction |
-| Affichage | Toutes, triées par date | Échantillon de trois |
+| Affichage | Tous, triés par date | Échantillon de trois |
 
 Une intention ne peut pas être en retard : elle ne porte aucune temporalité.
-Une obligation le peut, et c'est normal — une déclaration fiscale hors délai est un
+Un engagement le peut, et c'est normal — une déclaration fiscale hors délai est un
 fait, pas un jugement.
 
 ## Ce que l'application ne fait pas
