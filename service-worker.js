@@ -1,7 +1,7 @@
 /* Prépack — cache applicatif.
    Incrémenter CACHE_NAME à chaque mise en ligne pour forcer la mise à jour. */
 
-const CACHE_NAME = 'prepack-v1';
+const CACHE_NAME = 'prepack-v2';
 
 const ASSETS = [
   './',
