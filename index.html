@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#DC2626">
+    <title>📦 Prépack</title>
+    <meta name="description" content="Obligations datées et intentions à matérialiser">
+
+    <!-- PWA : chemins relatifs, l'appli est servie depuis un sous-dossier -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./style.css">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Prépack">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>📦 Prépack</h1>
+            <div class="header-controls">
+                <div class="theme-switch">
+                    <span class="theme-label">🌞</span>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="theme-label">🌙</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">Bonjour ! 👋</h2>
+                <p class="hero-subtitle" id="heroSubtitle">Chargement…</p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statWeek">0</div>
+                    <div class="stat-label">Faites cette semaine</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statMonth">0</div>
+                    <div class="stat-label">Faites ce mois-ci</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+
+        <!-- Bouton d'ajout pliable -->
+        <div class="add-task-toggle">
+            <button class="btn btn-add" id="toggleAddForm">➕ Nouvelle entrée</button>
+        </div>
+
+        <!-- Formulaire (pliable) -->
+        <section class="add-task-section" id="addTaskSection" style="display: none;">
+            <h2 id="formTitle">➕ Nouvelle entrée</h2>
+            <form id="addTaskForm">
+
+                <div class="form-group">
+                    <label>Nature *</label>
+                    <div class="type-toggle">
+                        <button type="button" class="type-btn active" data-type="obligation">📌 Obligation</button>
+                        <button type="button" class="type-btn" data-type="intention">💭 Intention</button>
+                    </div>
+                    <small class="form-hint" id="typeHint">Une contrainte extérieure, avec une date réelle.</small>
+                    <input type="hidden" id="taskType" value="obligation">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskTitle">Titre *</label>
+                    <input type="text" id="taskTitle" placeholder="Ex : déclaration de revenus" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" placeholder="Détails optionnels…" rows="3"></textarea>
+                </div>
+
+                <!-- Champs réservés aux obligations -->
+                <div id="obligationFields">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskPriority">Priorité *</label>
+                            <select id="taskPriority">
+                                <option value="low">🟢 Basse</option>
+                                <option value="medium" selected>🟡 Moyenne</option>
+                                <option value="high">🔴 Haute</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taskDueDate">Échéance</label>
+                            <input type="date" id="taskDueDate">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskTags">Tags (séparés par des virgules)</label>
+                    <input type="text" id="taskTags" placeholder="Ex : travail, atelier, perso">
+                    <small class="form-hint">Tapez vos tags et séparez-les par des virgules</small>
+                </div>
+
+                <input type="hidden" id="editingTaskId">
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelAddForm">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">✅ Ajouter</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Filtres -->
+        <section class="filters-section">
+            <div class="filters-header">
+                <h3>🔍 Filtres</h3>
+                <button class="btn-small btn-secondary" id="clearFilters">Réinitialiser</button>
+            </div>
+            <div class="filters-grid">
+                <div class="form-group">
+                    <label for="filterPriority">Priorité <small>(obligations)</small></label>
+                    <select id="filterPriority">
+                        <option value="all">Toutes les priorités</option>
+                        <option value="high">🔴 Haute</option>
+                        <option value="medium">🟡 Moyenne</option>
+                        <option value="low">🟢 Basse</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filterTag">Tag</label>
+                    <select id="filterTag">
+                        <option value="all">Tous les tags</option>
+                    </select>
+                </div>
+
+                <div class="form-group search-box">
+                    <label for="searchBox">Recherche</label>
+                    <input type="text" id="searchBox" placeholder="🔎 Rechercher…">
+                </div>
+            </div>
+        </section>
+
+        <!-- Obligations -->
+        <section class="tasks-section">
+            <div class="section-header">
+                <h2>📌 Obligations</h2>
+                <span class="badge" id="obligationsCount">0</span>
+            </div>
+            <div id="obligationsList" class="tasks-list">
+                <p class="empty-state">Aucune obligation en cours</p>
+            </div>
+        </section>
+
+        <!-- Intentions -->
+        <section class="tasks-section intentions-section">
+            <div class="section-header">
+                <h2>💭 Intentions</h2>
+                <span class="badge hidden" id="intentionsCount">0</span>
+            </div>
+            <div id="intentionsList" class="tasks-list">
+                <p class="empty-state">Aucune intention notée</p>
+            </div>
+            <div class="sample-actions" id="sampleActions" style="display: none;">
+                <button class="btn-small btn-secondary" id="shuffleIntentions">🔀 En voir d'autres</button>
+                <button class="btn-small btn-secondary" id="toggleAllIntentions">📖 Tout voir</button>
+            </div>
+        </section>
+
+        <!-- Terminées (pliable) -->
+        <section class="completed-section">
+            <div class="section-header collapsible" id="completedHeader">
+                <h2>✅ Terminées récemment</h2>
+                <div class="header-right">
+                    <span class="badge" id="completedTasksCount">0</span>
+                    <span class="collapse-icon">▼</span>
+                </div>
+            </div>
+            <div id="completedTasksList" class="tasks-list" style="display: none;">
+                <p class="empty-state">Aucune tâche terminée</p>
+            </div>
+        </section>
+
+        <!-- Mises de côté (pliable) -->
+        <section class="completed-section setaside-section" id="setAsideSection" style="display: none;">
+            <div class="section-header collapsible" id="setAsideHeader">
+                <h2>🗂️ Mises de côté</h2>
+                <div class="header-right">
+                    <span class="badge" id="setAsideCount">0</span>
+                    <span class="collapse-icon">▼</span>
+                </div>
+            </div>
+            <div id="setAsideList" class="tasks-list" style="display: none;">
+                <p class="empty-state">Rien de mis de côté</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="app-footer">
+        <div class="container">
+            <button class="btn-small btn-secondary" id="exportData">⬇️ Exporter</button>
+            <button class="btn-small btn-secondary" id="importData">⬆️ Importer</button>
+            <button class="btn-small btn-danger" id="resetData">🗑️ Tout effacer</button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+        </div>
+    </footer>
+
+    <script src="./app.js"></script>
+</body>
+</html>
